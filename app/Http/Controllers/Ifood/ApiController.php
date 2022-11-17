@@ -25,8 +25,11 @@ class ApiController extends Controller
         return $this->apiRepositorio->getProtudos();
     }
 
-    public function postProduto()
+    public function postProduto(Request $produto)
     {
-        return $this->apiRepositorio->postProduto();
+      
+        return $this->apiRepositorio->postProduto($produto->input());
     }
 }
+
+

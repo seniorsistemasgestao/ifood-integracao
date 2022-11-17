@@ -6,6 +6,8 @@ use App\Models\Ifood\IfoodModel;
 use Exception;
 
 use App\Repositorio\Ifood\SessionRepositporio;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Http;
 
 class ApiRepositorio
 {
@@ -27,7 +29,6 @@ class ApiRepositorio
     public function getToken()
     {
         try {
-
             $request = $this->ifoodModel->ClienteHttp('POST', $this->tokenHttp, [
                 "grantType" => "client_credentials",
                 "clientId" => env("CREDENCIAL_IFOOD_CLIENT_ID"),
@@ -36,7 +37,7 @@ class ApiRepositorio
             ]);
             //salva o token na session 
             $this->session->set('token', $request->accessToken);
-            return  $request;
+            return true;
         } catch (Exception $e) {
             return response(['error' => $e->getMessage()]);
         }
@@ -65,32 +66,40 @@ class ApiRepositorio
             return $request;
         } catch (Exception $e) {
             //caso token esteja vencido ele renova 
-            $this->getToken();
-            $this->getProtudos();
-           // return $e->getMessage();
+            if ($this->getToken()) {
+                return $this->getProtudos();
+            }
+
+            return response(['error' => $e->getMessage()]);
         }
     }
 
     //criar o produto
-    public function postProduto()
+    public function postProduto($produto)
     {
+        //$token = $this->session->get('token');
+            
         try {
+            $url = 'https://merchant-api.ifood.com.br/catalog/v1.0/merchants/86a1b3cf-ea31-4a69-a502-000eb81ebf3d/products';
             $token = $this->session->get('token');
-            $response =  $this->cliente->request('GET', $this->listProdHttp . env('CREDENCIAL_IFOOD_CLIENT_MERCHANTID') . '/products', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token
-                ],
-                'query' =>
-                [
-                    "limit" => 100,
-                    "page" => 1
-                ]
+            
+            $request = $this->ifoodModel->ClienteHttp('POST',$url,[],[
+                'Authorization' => 'Bearer ' . $token
             ]);
-            return response($response->getBody(), 200, ['Content-type' => 'application/json']);
+            return response($request);
+
         } catch (Exception $e) {
-            //caso token esteja vencido ele renova 
-            $this->getToken();
-            $this->getProtudos();
+            
+            if ($this->getToken()) {
+                return $this->postProduto($produto);
+            }
+
+            return response(
+                [
+                "token"=>$token
+                ,"a"=>$e->getMessage()
+             ]
+        );
         }
     }
 }

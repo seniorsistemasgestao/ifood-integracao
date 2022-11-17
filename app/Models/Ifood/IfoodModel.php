@@ -21,14 +21,14 @@ class IfoodModel extends Model
         $this->cliente = new \GuzzleHttp\Client();
     }
 
-    public function ClienteHttp($method,$url,$data=null,$headers =null,$query = null)
+    public function ClienteHttp($method, $url, $data = null, $headers = null, $query = null)
     {
         $response =  $this->cliente->request($method, $url, [
             "form_params" => $data,
             'headers' => $headers,
             "query" => $query
         ]);
-        
+
         return json_decode($response->getBody());
     }
 }
