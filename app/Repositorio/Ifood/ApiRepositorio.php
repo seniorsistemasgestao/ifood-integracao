@@ -7,6 +7,7 @@ use Exception;
 
 use App\Repositorio\Ifood\SessionRepositporio;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 class ApiRepositorio
@@ -77,29 +78,45 @@ class ApiRepositorio
     //criar o produto
     public function postProduto($produto)
     {
-        //$token = $this->session->get('token');
-            
+        $token = $this->session->get('token');
+
+
         try {
+
+            $data = [
+                "name" => $produto['name'] ?? "",
+                "description" => $produto['description'] ?? "",
+                "additionalInformation" => $produto['additionalInformation'] ?? "none",
+                "serving" => $produto['serving'] ?? "SERVES_1",
+                "externalCode" => $produto['externalCode'] ?? "",
+                "image" => $produto['image'] ?? "",
+                "dietaryRestrictions" => $produto['dietaryRestrictions'] ?? [],
+
+                "ean" => $produto['ean'] ?? "",
+                "weight" => [
+                    "quantity" => $produto['weight']['quantity'] ?? 0,
+                    "unit" => $produto['weight']['unit'] ?? "g"
+                ]
+            ];
+
             $url = 'https://merchant-api.ifood.com.br/catalog/v1.0/merchants/86a1b3cf-ea31-4a69-a502-000eb81ebf3d/products';
             $token = $this->session->get('token');
-            
-            $request = $this->ifoodModel->ClienteHttp('POST',$url,[],[
+            $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token
-            ]);
-            return response($request);
+            ])->asForm()->post($url, $data);
 
+
+
+            return  response($response);
         } catch (Exception $e) {
-            
-            if ($this->getToken()) {
-                return $this->postProduto($produto);
-            }
+
+
 
             return response(
                 [
-                "token"=>$token
-                ,"a"=>$e->getMessage()
-             ]
-        );
+                    "token" => $token, "error" => $e->getMessage()
+                ]
+            );
         }
     }
 }

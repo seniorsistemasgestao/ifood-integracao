@@ -5,6 +5,7 @@ namespace App\Models\Ifood;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 
 class IfoodModel extends Model
 {
@@ -30,5 +31,17 @@ class IfoodModel extends Model
         ]);
 
         return json_decode($response->getBody());
+    }
+
+    public function ClienteHttps($method, $url, $headers = [], $data = [], $query = [])
+    {
+        $response =  Http::withHeaders($headers)->asForm()->post(
+            $url,
+            [
+                $data
+            ],
+            $query
+        );
+        return response($response);
     }
 }
