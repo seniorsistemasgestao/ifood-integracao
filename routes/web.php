@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::controller(UserController::class)->group(function () {
+
+    Route::middleware('guest')->group(function () {
+        Route::get('/', 'login')->name('home');
+
+        Route::get('/cadastro', 'cadastrarCredenciais')->name('get.cadastro');
+        Route::post('/cadastro', 'postCredencial')->name('post.cadastro');
+
+        Route::post('/login', 'postLogin')->name('post.login');
+        Route::get('/login', 'login')->name('get.login');
+    });
+
+
+
+
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', "dashboard")->name('get.dashbaord');
+        Route::post('/logout','logout')->name('post.logout');
+    });
 });
