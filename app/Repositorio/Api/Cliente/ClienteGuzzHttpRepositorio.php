@@ -45,10 +45,16 @@ class ClienteGuzzHttpRepositorio
         return $this->urlBase . "catalog/v1.0/merchants/{$mercadoId}/catalogs";
     }
 
+
     //sessão de categoria - lista de categorias
     public function getUrlCategoria($mercadoId, $catalogoId)
     {
         return $this->urlBase . "catalog/v1.0/merchants/{$mercadoId}/catalogs/{$catalogoId}/categories";
+    }
+     // criar categoria
+    public function getUrlPostCategoria($mercadoId,$catalogId)
+    {
+        return $this->urlBase . "merchants/{$mercadoId}/catalogs/{$catalogId}/categories";
     }
 
     //sessão de item  - criar item
@@ -57,5 +63,5 @@ class ClienteGuzzHttpRepositorio
         return $this->urlBase . "catalog/v1.0/merchants/{$mercadoId}/categories/{$categoriaId}/products/{$produtoId}";
     }
 
-
+    
 }

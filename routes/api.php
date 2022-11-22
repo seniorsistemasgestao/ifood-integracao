@@ -23,4 +23,5 @@ Route::controller(ApiController::class)->group(function(){
     Route::post('/getToken','getToken');
     Route::get('/getProdutos','getProdutos');
     Route::get('/getCatalogos','getCatalogos');
+    Route::post('/postProduto','postProdutos');
 });

@@ -126,4 +126,103 @@ class ApiRepositorio
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
     }
+
+
+    public function postProdutos($credencial)
+    {
+
+
+        $token = $this->session->get('token') ?? "vazio";
+        try {
+            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostProduto($credencial['merchantId']), [
+                "headers" => [
+                    'Content-Type' => "application/x-www-form-urlencoded",
+                    'Accept' => "application/json",
+                    "Authorization" => $token
+                ],
+                "form_params" => [
+                    "name" => $credencial['name'],
+                    "description" => $credencial['description'],
+                    "externalCode" => $credencial['externalCode'] ?? uniqid(),
+                    "serving" => $credencial['serving'],
+                    "dietaryRestrictions" => $credencial['dietaryRestrictions'] ?? [],
+                    "weight" => [
+                        "quantity" =>  $credencial['weight']['quantity'] ?? "",
+                        "unit" =>  $credencial['weight']['unit'] ?? ""
+                    ]
+                ]
+            ]);
+            $format = json_decode($request->getBody());
+            //$this->session->set('catalogoID', $format[0]->catalogId);
+            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+        } catch (Exception $e) {
+            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+        }
+    }
+
+    public function postCategoria($credencial)
+    {
+        $token = $this->session->get('token') ?? "vazio";
+        try {
+            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostCategoria($credencial['merchantId'], $credencial['catalogId']), [
+                "headers" => [
+                    'Content-Type' => "application/x-www-form-urlencoded",
+                    'Accept' => "application/json",
+                    "Authorization" => $token
+                ],
+                "form_params" => [
+                    "name" => $credencial['name'],
+                    "status" => $credencial['status'],
+                    "template" => $credencial['template']
+                ]
+            ]);
+            $format = json_decode($request->getBody());
+            //$this->session->set('catalogoID', $format[0]->catalogId);
+            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+        } catch (Exception $e) {
+            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+        }
+    }
+
+    public function postItem($credencial)
+    {
+        $token = $this->session->get('token') ?? "vazio";
+        try {
+            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostCategoria($credencial['merchantId'], $credencial['catalogId']), [
+                "headers" => [
+                    'Content-Type' => "application/x-www-form-urlencoded",
+                    'Accept' => "application/json",
+                    "Authorization" => $token
+                ],
+                "form_params" => [
+
+                    "status" => $credencial['status'],
+                    "price" => [
+                        "value" => $credencial['price']['value'] ?? "",
+                        "originalValue" => $credencial['price']['originalValue'] ?? "",
+                        "scalePrices" => [
+                            "minQuantity" => $credencial['price']['scalePrices']['minQuantity'],
+                            "price" => $credencial['price']['scalePrices']['price']
+                        ]
+                    ],
+                    "shifts" => [
+                        "startTime" =>  $credencial['shifts']['startTime'],
+                        "endTime" => $credencial['shifts']['endTime'],
+                        "monday" => $credencial['shifts']['monday'],
+                        "tuesday" => $credencial['shifts']['tuesday'],
+                        "wednesday" => $credencial['shifts']['wednesday'],
+                        "thursday" => $credencial['shifts']['thursday'],
+                        "friday"  => $credencial['shifts']['friday'],
+                        "saturday" => $credencial['shifts']['saturday'],
+                        "sunday" => $credencial['shifts']['sunday']
+                    ]
+                ]
+            ]);
+            $format = json_decode($request->getBody());
+            //$this->session->set('catalogoID', $format[0]->catalogId);
+            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+        } catch (Exception $e) {
+            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+        }
+    }
 }
