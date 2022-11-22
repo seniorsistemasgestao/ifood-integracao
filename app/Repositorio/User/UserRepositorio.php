@@ -22,6 +22,7 @@ class UserRepositorio
         $this->user = new User();
         $this->apiRepositorio = new ApiRepositorio();
         $this->session = new SessionRepositorio();
+    
     }
 
     public function getToken($credencial)
@@ -89,7 +90,7 @@ class UserRepositorio
 
         
          $data = [
-           "produtos" => ($this->getProdutos())
+           "produtos" => ($this->getProdutos()) ?? ""
          ];
 
      

@@ -6,6 +6,8 @@
 
     <h1 class="text-center">Parabens vc acabou de logar !</h1>
 
+@if (isset($produtos->elements)):
+    
 
     <div class="text-center justfy-conten-center">
 
@@ -38,5 +40,5 @@
 
     </div>
 
-
+    @endif
 @endsection

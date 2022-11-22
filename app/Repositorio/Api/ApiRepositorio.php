@@ -51,6 +51,7 @@ class ApiRepositorio
             ]);
 
             $format = json_decode($request->getBody());
+      
             $this->session->set('token', 'Bearer ' . $format->accessToken);
             return response(["token" => $format->accessToken], 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
@@ -61,8 +62,8 @@ class ApiRepositorio
 
     public function getProdutos($credencial)
     {
-        $token = $this->session->get('token');
-
+        $token = $this->session->get('token') ?? "vazio";
+    
     //    var_dump($this->clientHttpGuzz->getUrlProdutos($credencial['merchantId']));die();
         try {
             $request = $this->clientHttpGuzz->getCliente()->request('GET', $this->clientHttpGuzz->getUrlProdutos($credencial['merchantId']), [
