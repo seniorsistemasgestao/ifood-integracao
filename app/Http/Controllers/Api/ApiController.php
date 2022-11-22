@@ -25,4 +25,9 @@ class ApiController extends Controller
     {
         return $this->apiRepositorio->getProdutos($credencial->input());
     }
+
+    public function getCatalogos(Request $credencial)
+    {
+        return $this->apiRepositorio->getCatalogos($credencial->input());
+    }
 }

@@ -22,4 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::controller(ApiController::class)->group(function(){
     Route::post('/getToken','getToken');
     Route::get('/getProdutos','getProdutos');
+    Route::get('/getCatalogos','getCatalogos');
 });
