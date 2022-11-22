@@ -206,15 +206,15 @@ class ApiRepositorio
                         ]
                     ],
                     "shifts" => [
-                        "startTime" =>  $credencial['shifts']['startTime'],
-                        "endTime" => $credencial['shifts']['endTime'],
-                        "monday" => $credencial['shifts']['monday'],
-                        "tuesday" => $credencial['shifts']['tuesday'],
-                        "wednesday" => $credencial['shifts']['wednesday'],
-                        "thursday" => $credencial['shifts']['thursday'],
-                        "friday"  => $credencial['shifts']['friday'],
-                        "saturday" => $credencial['shifts']['saturday'],
-                        "sunday" => $credencial['shifts']['sunday']
+                        "startTime" =>  $credencial['shifts']['startTime'] ?? "00:00",
+                        "endTime" => $credencial['shifts']['endTime'] ?? "23:59",
+                        "monday" => $credencial['shifts']['monday'] ?? false,
+                        "tuesday" => $credencial['shifts']['tuesday'] ?? false,
+                        "wednesday" => $credencial['shifts']['wednesday'] ?? false,
+                        "thursday" => $credencial['shifts']['thursday'] ?? false,
+                        "friday"  => $credencial['shifts']['friday'] ?? false,
+                        "saturday" => $credencial['shifts']['saturday'] ?? false,
+                        "sunday" => $credencial['shifts']['sunday'] ?? false
                     ]
                 ]
             ]);
