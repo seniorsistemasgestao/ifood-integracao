@@ -14,9 +14,7 @@ class ClienteGuzzHttpRepositorio
     public function __construct()
     {
         $this->urlBase = "https://merchant-api.ifood.com.br/";
-        //    $this->urlToken = "https://merchant-api.ifood.com.br/authentication/v1.0/oauth/token";
-        //    $this->urlGetProtudos = "https://merchant-api.ifood.com.br/catalog/v1.0/".$this->user->getMerchantID()."/merchants/{merchantId}/products";
-
+        
     }
 
     public function getCliente()
@@ -33,5 +31,15 @@ class ClienteGuzzHttpRepositorio
     {
         ///merchants/{merchantId}/products
         return $this->urlBase."catalog/v1.0/merchants/{$mercadoId}/products";
+    }
+
+    public function getUrlGetCalalogo($mercadoId)
+    {
+        return $this->urlBase."catalog/v1.0/merchants/{$mercadoId}/catalogs";
+    }
+
+    public function getUrlCategoriaID($mercadoId)
+    {
+        return $this->urlBase."";
     }
 }
