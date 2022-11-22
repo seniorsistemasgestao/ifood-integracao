@@ -215,7 +215,8 @@ class ApiRepositorio
                         "friday"  => $credencial['shifts']['friday'] ?? false,
                         "saturday" => $credencial['shifts']['saturday'] ?? false,
                         "sunday" => $credencial['shifts']['sunday'] ?? false
-                    ]
+                    ],
+                    "tags" => $credencial['tags']
                 ]
             ]);
             $format = json_decode($request->getBody());
