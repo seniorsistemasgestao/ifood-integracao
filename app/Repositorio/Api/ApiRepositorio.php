@@ -119,8 +119,6 @@ class ApiRepositorio
                     "merchantId" => $credencial['merchantId']
                 ]
             ]);
-            $format = json_decode($request->getBody());
-            $this->session->set('catalogoID', $format[0]->catalogId);
             return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
@@ -152,8 +150,6 @@ class ApiRepositorio
                     ]
                 ]
             ]);
-            $format = json_decode($request->getBody());
-            //$this->session->set('catalogoID', $format[0]->catalogId);
             return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
@@ -176,14 +172,13 @@ class ApiRepositorio
                     "template" => $credencial['template']
                 ]
             ]);
-            $format = json_decode($request->getBody());
-            //$this->session->set('catalogoID', $format[0]->catalogId);
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+           return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
     }
 
+    //criar item 
     public function postItem($credencial)
     {
         $token = $this->session->get('token') ?? "vazio";
@@ -219,9 +214,7 @@ class ApiRepositorio
                     "tags" => $credencial['tags']
                 ]
             ]);
-            $format = json_decode($request->getBody());
-            //$this->session->set('catalogoID', $format[0]->catalogId);
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+           return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
