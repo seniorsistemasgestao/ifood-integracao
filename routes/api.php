@@ -26,14 +26,19 @@ Route::controller(ApiController::class)->group(function(){
     Route::get('/getProdutos','getProdutos');
     //testado
     Route::get('/getCatalogos','getCatalogos');
+
+    //testado
     Route::post('/postProduto','postProdutos');
+    // ainda em teste
     Route::get('/refreshToken','getRefreshToken');
 
     Route::post('/postItem','postItem');
 
     Route::get('/getCatalogo','getCatalogo');
 
-    Route::get('/getCategoria','getCategoria');
+    Route::get('/getCategorias','getCategorias');
+
+    Route::post('/postCategoria','postCategoria');
 });
 
 

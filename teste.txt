@@ -1,0 +1,35 @@
+ $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']), [
+                "headers" => [
+                    'Content-Type' => "application/multipart/form-data",
+                    'Accept' => "application/json",
+                    "Authorization" => $token
+                ],
+                "form_params" => [
+
+                    "status" => $credencial['status'],
+                    "price" => [
+                        "value" => $credencial['price']['value'] ?? "",
+                        "originalValue" => $credencial['price']['originalValue'] ?? "",
+                    ],
+                    
+                    "tags" => $credencial['tags'] ?? ""
+                ]
+            ]);
+
+
+
+   $data = [
+            "status" => $credencial['status'],
+            "price" => [
+                "value" => $credencial['price']['value'] ?? "",
+                "originalValue" => $credencial['price']['originalValue'] ?? "",
+            ],
+            "tags" => $credencial['tags'] ?? ""
+        ];
+        
+    $response = $this->clientHttp->getCliente()::withHeaders([
+                'Accept' => "application/json",
+                "Authorization" => $token
+            ])->acceptJson()->asForm()->post($this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']), $credencial);
+            // var_dump($response);die();
+            return ($response);

@@ -32,7 +32,7 @@ class UserRequest extends FormRequest
             'cliente_secreto' => 'required|max:150',
             'mercado_id' => 'required|max:90',
             'password' => 'required|min:5|max:12',
-            'email' => 'required|email|',
+            'email' => 'required|email|unique:users,email',
         ];
 
         if ($method === 'PUT') {

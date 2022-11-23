@@ -72,6 +72,11 @@
                                         value="{{ old('email') }}" required>
                                 </div>
                                 <div class="form-group mb-3">
+                                    @error('email')
+                                        <span class="danger text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="form-group mb-3">
                                     <label class="label" for="password">Senha</label>
                                     <input type="password" name="password"  class="form-control" placeholder="password"
                                         value="{{ old('password') }}" required>

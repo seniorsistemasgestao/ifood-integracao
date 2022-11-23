@@ -35,4 +35,19 @@ class ApiController extends Controller
     {
         return $this->apiRepositorio->getCatalogos($credencial->input());
     }
+
+    public function postCategoria(Request $credencial)
+    {
+        return $this->apiRepositorio->postCategoria($credencial->input());
+    }
+
+    public function getCategorias(Request $credencial)
+    {
+        return $this->apiRepositorio->getCategorias($credencial->input());
+    }
+    public function postItem(Request $credencial)
+    {
+        return $this->apiRepositorio->postItem($credencial->input());
+
+    }
 }
