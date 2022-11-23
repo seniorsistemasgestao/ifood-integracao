@@ -200,15 +200,16 @@ class ApiRepositorio
     public function postItem($credencial)
     {
         $token = $this->session->get('token') ?? "vazio";
-        // var_dump();die();
+        // var_dump();die(); $this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']
 
-        $response = $this->clientHttpGuzz->getCliente()->request($this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']), [
-            "headers" => [
-                'Content-Type' => "application/multipart/form-data",
-                'Accept' => "application/json",
-                "Authorization" => $token
-            ],
-        ]);
+        $response = $this->clientHttp->getCliente()::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Authorization' => $token
+        ])->asForm()->post($this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']),
+        []);
+        
+        return $response->body();
     }
 
 
