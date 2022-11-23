@@ -20,8 +20,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::controller(ApiController::class)->group(function(){
+    //testado
     Route::post('/getToken','getToken');
+    //testado
     Route::get('/getProdutos','getProdutos');
+    //testado
     Route::get('/getCatalogos','getCatalogos');
     Route::post('/postProduto','postProdutos');
+    Route::get('/refreshToken','getRefreshToken');
+
+    Route::post('/postItem','postItem');
+
+    Route::get('/getCatalogo','getCatalogo');
+
+    Route::get('/getCategoria','getCategoria');
 });
+
+
+

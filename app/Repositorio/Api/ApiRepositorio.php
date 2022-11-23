@@ -33,9 +33,10 @@ class ApiRepositorio
     }
 
 
-    public function getToken($credencial)
+    public function getToken($credencial = [])
     {
 
+        $validarUser = $this->user->all()->first();
 
         try {
             $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlToken(), [
@@ -44,9 +45,9 @@ class ApiRepositorio
                     'Accept' => "application/json"
                 ],
                 "form_params" => [
-                    "grantType" => $credencial['grantType'],
-                    "clientId" => $credencial['clientId'],
-                    "clientSecret" => $credencial['clientSecret']
+                    "grantType" => $credencial['grantType'] ?? 'client_credentials',
+                    "clientId" => $credencial['clientId'] ? $validarUser->cliente_id : "",
+                    "clientSecret" => $credencial['clientSecret'] ? $validarUser->cliente_secreto : ""
                 ]
             ]);
 
@@ -79,6 +80,9 @@ class ApiRepositorio
             ]);
             return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
+            if ($this->verifyToken($e->getMessage())) {
+                return $this->getProdutos($credencial);
+            }
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
     }
@@ -101,6 +105,9 @@ class ApiRepositorio
             $this->session->set('catalogoID', $format[0]->catalogId);
             return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
+            if ($this->verifyToken($e->getMessage())) {
+                return $this->getCatalogos($credencial);
+            }
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
     }
@@ -121,16 +128,16 @@ class ApiRepositorio
             ]);
             return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
+            if ($this->verifyToken($e->getMessage())) {
+                return $this->getCategorias($credencial);
+            }
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
     }
 
-
     public function postProdutos($credencial)
     {
-
-
-        $token = $this->session->get('token') ?? "vazio";
+        $token =   $this->session->get('token') ?? "vazio";
         try {
             $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostProduto($credencial['merchantId']), [
                 "headers" => [
@@ -150,9 +157,16 @@ class ApiRepositorio
                     ]
                 ]
             ]);
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+
+            return response($request->getBody(), 201, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
-            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+
+
+            if ($this->verifyToken($e->getMessage())) {
+
+                $this->postProdutos($credencial);
+            }
+            return response(["error" => $e->getMessage()], 401, ['Content-Type' => "application/json"]);
         }
     }
 
@@ -172,8 +186,12 @@ class ApiRepositorio
                     "template" => $credencial['template']
                 ]
             ]);
-           return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+
+            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
+            if ($this->verifyToken($e->getMessage())) {
+                return $this->postCategoria($credencial);
+            }
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
     }
@@ -183,7 +201,7 @@ class ApiRepositorio
     {
         $token = $this->session->get('token') ?? "vazio";
         try {
-            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostCategoria($credencial['merchantId'], $credencial['catalogId']), [
+            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['catalogId'], $credencial['productId']), [
                 "headers" => [
                     'Content-Type' => "application/x-www-form-urlencoded",
                     'Accept' => "application/json",
@@ -211,12 +229,28 @@ class ApiRepositorio
                         "saturday" => $credencial['shifts']['saturday'] ?? false,
                         "sunday" => $credencial['shifts']['sunday'] ?? false
                     ],
-                    "tags" => $credencial['tags']
+                    "tags" => $credencial['tags'] ?? ""
                 ]
             ]);
-           return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
+
+            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
         } catch (Exception $e) {
+            if ($this->verifyToken($e->getMessage())) {
+                return $this->postItem($credencial);
+            }
             return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
         }
+    }
+
+
+
+    protected function verifyToken($token)
+    {
+
+        if (str_contains($token, 'token expired')) {
+            //$this->getToken();
+            return  true;
+        }
+        return false;
     }
 }

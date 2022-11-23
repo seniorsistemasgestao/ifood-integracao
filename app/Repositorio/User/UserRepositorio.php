@@ -22,7 +22,6 @@ class UserRepositorio
         $this->user = new User();
         $this->apiRepositorio = new ApiRepositorio();
         $this->session = new SessionRepositorio();
-    
     }
 
     public function getToken($credencial)
@@ -78,22 +77,35 @@ class UserRepositorio
 
     public function postLogin($credencial)
     {
-        if (Auth::attempt(['email' => $credencial['email'], 'password' => $credencial['password']]))
-        { 
-            return true;
+
+        $validarUser = $this->user->where('email', $credencial['email'])->first();
+
+
+        $token = $this->getToken([
+            "grantType" => "client_credentials",
+            "clientId" => $validarUser->cliente_id,
+            "clientSecret" => $validarUser->cliente_secreto
+        ]);
+
+        if ($token) {
+            if (Auth::attempt(['email' => $credencial['email'], 'password' => $credencial['password']])) {
+                return true;
+            }
+            return false;
         }
+
         return false;
     }
 
     public function getDashboard()
     {
 
-        
-         $data = [
-           "produtos" => ($this->getProdutos()) ?? ""
-         ];
 
-     
-         return $data;
+        $data = [
+            "produtos" => ($this->getProdutos()) ?? ""
+        ];
+
+
+        return $data;
     }
 }
