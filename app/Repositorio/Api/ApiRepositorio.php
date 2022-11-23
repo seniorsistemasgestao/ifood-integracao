@@ -116,7 +116,7 @@ class ApiRepositorio
     {
         $token = $this->session->get('token') ?? "vazio";
         try {
-            $request = $this->clientHttpGuzz->getCliente()->request('GET', $this->clientHttpGuzz->getUrlGetCalalogo($credencial['merchantId']), [
+            $request = $this->clientHttpGuzz->getCliente()->request('GET', $this->clientHttpGuzz->getUrlCategoria($credencial['merchantId'], $credencial['catalogId']), [
                 "headers" => [
                     'Content-Type' => "application/json",
                     'Accept' => "application/json",
@@ -200,47 +200,18 @@ class ApiRepositorio
     public function postItem($credencial)
     {
         $token = $this->session->get('token') ?? "vazio";
-        try {
-            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['catalogId'], $credencial['productId']), [
-                "headers" => [
-                    'Content-Type' => "application/x-www-form-urlencoded",
-                    'Accept' => "application/json",
-                    "Authorization" => $token
-                ],
-                "form_params" => [
+        // var_dump();die();
 
-                    "status" => $credencial['status'],
-                    "price" => [
-                        "value" => $credencial['price']['value'] ?? "",
-                        "originalValue" => $credencial['price']['originalValue'] ?? "",
-                        "scalePrices" => [
-                            "minQuantity" => $credencial['price']['scalePrices']['minQuantity'],
-                            "price" => $credencial['price']['scalePrices']['price']
-                        ]
-                    ],
-                    "shifts" => [
-                        "startTime" =>  $credencial['shifts']['startTime'] ?? "00:00",
-                        "endTime" => $credencial['shifts']['endTime'] ?? "23:59",
-                        "monday" => $credencial['shifts']['monday'] ?? false,
-                        "tuesday" => $credencial['shifts']['tuesday'] ?? false,
-                        "wednesday" => $credencial['shifts']['wednesday'] ?? false,
-                        "thursday" => $credencial['shifts']['thursday'] ?? false,
-                        "friday"  => $credencial['shifts']['friday'] ?? false,
-                        "saturday" => $credencial['shifts']['saturday'] ?? false,
-                        "sunday" => $credencial['shifts']['sunday'] ?? false
-                    ],
-                    "tags" => $credencial['tags'] ?? ""
-                ]
-            ]);
-
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
-        } catch (Exception $e) {
-            if ($this->verifyToken($e->getMessage())) {
-                return $this->postItem($credencial);
-            }
-            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
-        }
+        $response = $this->clientHttpGuzz->getCliente()->request($this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']), [
+            "headers" => [
+                'Content-Type' => "application/multipart/form-data",
+                'Accept' => "application/json",
+                "Authorization" => $token
+            ],
+        ]);
     }
+
+
 
 
 
@@ -248,8 +219,12 @@ class ApiRepositorio
     {
 
         if (str_contains($token, 'token expired')) {
-            //$this->getToken();
-            return  true;
+            $response = json_decode($this->apiRepositorio->getToken()->content());
+
+            if (isset($response->token)) {
+                return true;
+            }
+            return  false;
         }
         return false;
     }
