@@ -38,195 +38,164 @@ class ApiRepositorio
 
         $validarUser = $this->user->all()->first();
 
-        try {
-            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlToken(), [
-                "headers" => [
-                    'Content-Type' => "application/x-www-form-urlencoded",
-                    'Accept' => "application/json"
-                ],
-                "form_params" => [
-                    "grantType" => $credencial['grantType'] ?? 'client_credentials',
-                    "clientId" => $credencial['clientId'] ? $validarUser->cliente_id : "",
-                    "clientSecret" => $credencial['clientSecret'] ? $validarUser->cliente_secreto : ""
-                ]
-            ]);
 
-            $format = json_decode($request->getBody());
-
-            $this->session->set('token', 'Bearer ' . $format->accessToken);
-            return response(["token" => $format->accessToken], 200, ['Content-Type' => "application/json"]);
-        } catch (Exception $e) {
-            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+        if (!empty($validarUser)) {
+            $credencial['clientId'] ?? $credencial['clientId'] = $validarUser->cliente_id;
+            $credencial['clientSecret'] ?? $credencial['clientSecret'] = $validarUser->cliente_screto;
+            $credencial['grantType'] ?? $credencial['grantType'] = 'client_credentials';
         }
+
+        $request = $this->clientHttp->getCliente()::withHeaders([
+            'Content-Type' => "application/x-www-form-urlencoded",
+            'Accept' => "application/json"
+        ])->asForm()->post($this->clientHttp->getUrlToken(), $credencial)->object();
+
+        if (isset($request->accessToken)) {
+            $this->session->set('token', 'Bearer ' . $request->accessToken);
+        }
+        return response()->json($request);
     }
 
 
     public function getProdutos($credencial)
     {
-        $token = $this->session->get('token') ?? "vazio";
 
-        //    var_dump($this->clientHttpGuzz->getUrlProdutos($credencial['merchantId']));die();
-        try {
-            $request = $this->clientHttpGuzz->getCliente()->request('GET', $this->clientHttpGuzz->getUrlProdutos($credencial['merchantId']), [
-                "headers" => [
-                    'Content-Type' => "application/json",
-                    'Accept' => "application/json",
-                    "Authorization" => $token
-                ],
-                "query" => [
-                    "limit" => $credencial['limit'],
-                    "page" => $credencial['page']
-                ]
-            ]);
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
-        } catch (Exception $e) {
-            if ($this->verifyToken($e->getMessage())) {
-                return $this->getProdutos($credencial);
-            }
-            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+        if (!$this->session->verifySession('token')) {
+            $this->getToken();
+            $this->getProdutos($credencial);
         }
+        $token = $this->session->get('token');
+
+
+        $request = $this->clientHttp->getCliente()::withHeaders([
+            'Content-Type' => "application/json",
+            'Accept' => "application/json",
+            "Authorization" => $token
+        ])->asForm()->get($this->clientHttp->getUrlProdutos($credencial['merchantId']), $credencial)->object();
+        if (isset($request->message) && $request->message == "token expired") {
+            $this->getToken();
+            $this->getProdutos($credencial);
+        }
+        return response()->json($request);
     }
 
     public function getCatalogos($credencial)
     {
-        $token = $this->session->get('token') ?? "vazio";
-        try {
-            $request = $this->clientHttpGuzz->getCliente()->request('GET', $this->clientHttpGuzz->getUrlGetCalalogo($credencial['merchantId']), [
-                "headers" => [
-                    'Content-Type' => "application/json",
-                    'Accept' => "application/json",
-                    "Authorization" => $token
-                ],
-                "query" => [
-                    "merchantId" => $credencial['merchantId']
-                ]
-            ]);
-            $format = json_decode($request->getBody());
-            $this->session->set('catalogoID', $format[0]->catalogId);
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
-        } catch (Exception $e) {
-            if ($this->verifyToken($e->getMessage())) {
-                return $this->getCatalogos($credencial);
-            }
-            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+        if (!$this->session->verifySession('token')) {
+            $this->getToken();
+            $this->getCatalogos($credencial);
         }
+        $token = $this->session->get('token') ?? "vazio";
+
+
+        $request = $this->clientHttp->getCliente()::withHeaders([
+            'Content-Type' => "application/json",
+            'Accept' => "application/json",
+            "Authorization" => $token
+        ])->asForm()->get($this->clientHttp->getUrlGetCalalogo($credencial['merchantId']))->object();
+
+        if (isset($request->message) && $request->message == "token expired") {
+            $this->getToken();
+            $this->getCatalogos($credencial);
+        }
+
+        return response()->json($request);
     }
 
     public function getCategorias($credencial)
     {
-        $token = $this->session->get('token') ?? "vazio";
-        try {
-            $request = $this->clientHttpGuzz->getCliente()->request('GET', $this->clientHttpGuzz->getUrlCategoria($credencial['merchantId'], $credencial['catalogId']), [
-                "headers" => [
-                    'Content-Type' => "application/json",
-                    'Accept' => "application/json",
-                    "Authorization" => $token
-                ],
-                "query" => [
-                    "merchantId" => $credencial['merchantId']
-                ]
-            ]);
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
-        } catch (Exception $e) {
-            if ($this->verifyToken($e->getMessage())) {
-                return $this->getCategorias($credencial);
-            }
-            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+
+        if (!$this->session->verifySession('token')) {
+            $this->getToken();
+            $this->getCategorias($credencial);
         }
+        $token = $this->session->get('token') ?? "vazio";
+
+
+        $request = $this->clientHttp->getCliente()::withHeaders([
+            'Content-Type' => "application/json",
+            'Accept' => "application/json",
+            "Authorization" => $token
+        ])->asForm()->get($this->clientHttp->getUrlCategoria($credencial['merchantId'], $credencial['calatogId']))->object();
+
+        if (isset($request->message) && $request->message == "token expired") {
+            $this->getToken();
+            $this->getCategorias($credencial);
+        }
+        return response()->json($request);
     }
 
     public function postProdutos($credencial)
     {
-        $token =   $this->session->get('token') ?? "vazio";
-        try {
-            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostProduto($credencial['merchantId']), [
-                "headers" => [
-                    'Content-Type' => "application/x-www-form-urlencoded",
-                    'Accept' => "application/json",
-                    "Authorization" => $token
-                ],
-                "form_params" => [
-                    "name" => $credencial['name'],
-                    "description" => $credencial['description'],
-                    "externalCode" => $credencial['externalCode'] ?? uniqid(),
-                    "serving" => $credencial['serving'],
-                    "dietaryRestrictions" => $credencial['dietaryRestrictions'] ?? [],
-                    "weight" => [
-                        "quantity" =>  $credencial['weight']['quantity'] ?? "",
-                        "unit" =>  $credencial['weight']['unit'] ?? ""
-                    ]
-                ]
-            ]);
 
-            return response($request->getBody(), 201, ['Content-Type' => "application/json"]);
-        } catch (Exception $e) {
-
-
-            if ($this->verifyToken($e->getMessage())) {
-
-                $this->postProdutos($credencial);
-            }
-            return response(["error" => $e->getMessage()], 401, ['Content-Type' => "application/json"]);
+        if (!$this->session->verifySession('token')) {
+            $this->getToken();
+            $this->postProdutos($credencial);
         }
+
+        $token =   $this->session->get('token') ?? "vazio";
+
+
+        $request = $this->clientHttp->getCliente()::withHeaders([
+            'Content-Type' => "application/json",
+            'Accept' => "application/json",
+            "Authorization" => $token
+        ])->asForm()->post($this->clientHttp->getUrlPostProduto($credencial['merchantId']), $credencial);
+
+        if (isset($request->message) && $request->message == "token expired") {
+            $this->getToken();
+            $this->postProdutos($credencial);
+        }
+        return response()->json($request);
     }
 
     public function postCategoria($credencial)
     {
-        $token = $this->session->get('token') ?? "vazio";
-        try {
-            $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostCategoria($credencial['merchantId'], $credencial['catalogId']), [
-                "headers" => [
-                    'Content-Type' => "application/x-www-form-urlencoded",
-                    'Accept' => "application/json",
-                    "Authorization" => $token
-                ],
-                "form_params" => [
-                    "name" => $credencial['name'],
-                    "status" => $credencial['status'],
-                    "template" => $credencial['template']
-                ]
-            ]);
-
-            return response($request->getBody(), 200, ['Content-Type' => "application/json"]);
-        } catch (Exception $e) {
-            if ($this->verifyToken($e->getMessage())) {
-                return $this->postCategoria($credencial);
-            }
-            return response(["error" => $e->getMessage()], 200, ['Content-Type' => "application/json"]);
+        if (!$this->session->verifySession('token')) {
+            $this->getToken();
+            $this->postCategoria($credencial);
         }
+        $token = $this->session->get('token') ?? "vazio";
+
+        $request = $this->clientHttp->getCliente()::withHeaders([
+            'Content-Type' => "application/x-www-form-urlencoded",
+            'Accept' => "application/json",
+            "Authorization" => $token
+        ])->asForm()->post($this->clientHttp->getUrlPostCategoria($credencial['merchantId'], $credencial['catalogId']), $credencial)->object();
+
+        if (isset($request->message) && $request->message == "token expired") {
+            $this->getToken();
+            $this->postCategoria($credencial);
+        }
+        return response()->json($request);
     }
 
     //criar item 
     public function postItem($credencial)
     {
-        $token = $this->session->get('token') ?? "vazio";
-        // var_dump();die(); $this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']
 
-        $response = $this->clientHttp->getCliente()::withHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => $token
-        ])->asForm()->post($this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']),
-        []);
-        
-        return $response->body();
-    }
-
-
-
-
-
-    protected function verifyToken($token)
-    {
-
-        if (str_contains($token, 'token expired')) {
-            $response = json_decode($this->apiRepositorio->getToken()->content());
-
-            if (isset($response->token)) {
-                return true;
-            }
-            return  false;
+        if (!$this->session->verifySession('token')) {
+            $this->getToken();
+            $this->postItem($credencial);
         }
-        return false;
+        $token = $this->session->get('token');
+
+        $curl = curl_init($this->clientHttp->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+            "Content-Type: application/json",
+            "Authorization: {$token}"
+        ]);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($credencial));
+        $result =  curl_exec($curl);
+        curl_close($curl);
+        $ob = json_decode($result);
+        if (isset($ob->message) && $ob->message == "token expired") {
+            $this->getToken();
+            $this->postItem($credencial);
+        }
+        return $ob;
     }
 }

@@ -20,4 +20,9 @@ class  SessionRepositorio
        
         return $_SESSION[$key];
     }
+
+    public function verifySession($key)
+    {
+        return isset($_SESSION[$key]);
+    }
 }

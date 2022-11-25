@@ -1,6 +1,6 @@
  $request = $this->clientHttpGuzz->getCliente()->request('POST', $this->clientHttpGuzz->getUrlPostItems($credencial['merchantId'], $credencial['categoryId'], $credencial['productId']), [
                 "headers" => [
-                    'Content-Type' => "application/multipart/form-data",
+                    'Content-Type' => "application/application/x-www-form-urlencoded",
                     'Accept' => "application/json",
                     "Authorization" => $token
                 ],
