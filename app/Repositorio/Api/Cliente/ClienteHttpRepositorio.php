@@ -66,5 +66,8 @@ class ClienteHttpRepositorio
         return $this->urlBase . "catalog/v1.0/merchants/{$mercadoId}/categories/{$categoriaId}/products/{$produtoId}";
     }
 
+    public function getUrlDeleteProduto($mercadoId,$produtoId){
+        return $this->urlBase . "catalog/v1.0/merchants/{$mercadoId}/products/{$produtoId}";
+    }
 
 }

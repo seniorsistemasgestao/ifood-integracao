@@ -50,4 +50,8 @@ class ApiController extends Controller
         return $this->apiRepositorio->postItem($credencial->input());
 
     }
+    public function deleteProduto(Request $credencial)
+    {
+          return $this->apiRepositorio->deleteProduto($credencial->input());
+    }
 }

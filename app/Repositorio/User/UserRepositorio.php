@@ -29,7 +29,8 @@ class UserRepositorio
 
         $response = json_decode($this->apiRepositorio->getToken($credencial)->content());
 
-        if (!isset($response->token)) {
+        //dd($response->accessToken);
+        if (!isset($response->accessToken)) {
             return false;
         }
         return true;

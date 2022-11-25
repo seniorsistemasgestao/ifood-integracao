@@ -116,7 +116,7 @@ class ApiRepositorio
             'Content-Type' => "application/json",
             'Accept' => "application/json",
             "Authorization" => $token
-        ])->asForm()->get($this->clientHttp->getUrlCategoria($credencial['merchantId'], $credencial['calatogId']))->object();
+        ])->asForm()->get($this->clientHttp->getUrlCategoria($credencial['merchantId'], $credencial['catalogId']))->object();
 
         if (isset($request->message) && $request->message == "token expired") {
             $this->getToken();
@@ -137,10 +137,10 @@ class ApiRepositorio
 
 
         $request = $this->clientHttp->getCliente()::withHeaders([
-            'Content-Type' => "application/json",
+            'Content-Type' => "application/x-www-form-urlencoded",
             'Accept' => "application/json",
             "Authorization" => $token
-        ])->asForm()->post($this->clientHttp->getUrlPostProduto($credencial['merchantId']), $credencial);
+        ])->asForm()->post($this->clientHttp->getUrlPostProduto($credencial['merchantId']), $credencial)->object();
 
         if (isset($request->message) && $request->message == "token expired") {
             $this->getToken();
@@ -197,5 +197,26 @@ class ApiRepositorio
             $this->postItem($credencial);
         }
         return $ob;
+    }
+
+    public function deleteProduto($credencial)
+    {
+        if (!$this->session->verifySession('token')) {
+            $this->getToken();
+            $this->postProdutos($credencial);
+        }
+
+        $token = $this->session->get('token');
+        $request = $this->clientHttp->getCliente()::withHeaders([
+            'Content-Type' => "application/x-www-form-urlencoded",
+            'Accept' => "application/json",
+            "Authorization" => $token
+        ])->asForm()->delete($this->clientHttp->getUrlDeleteProduto($credencial['merchantId'], $credencial['prodcutId']), $credencial)->object();
+
+        if (isset($request->message) && $request->message == "token expired") {
+            $this->getToken();
+            $this->deleteProduto($credencial);
+        }
+        return $request;
     }
 }

@@ -31,14 +31,16 @@ Route::controller(ApiController::class)->group(function(){
     Route::post('/postProduto','postProdutos');
     // ainda em teste
     Route::get('/refreshToken','getRefreshToken');
-
+   //testado
     Route::post('/postItem','postItem');
-
+   //testado
     Route::get('/getCatalogo','getCatalogo');
-
+    //testado
     Route::get('/getCategorias','getCategorias');
-
+    //testado
     Route::post('/postCategoria','postCategoria');
+     //testado
+    Route::delete('/deleteProduto','deleteProduto');
 });
 
 
